@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FICA Section 125 Tax Savings Calculator | TMS Solutions Group</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #FAFAF7;
+      font-family: 'Inter', sans-serif;
+      color: #1a1a1a;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Header ── */
+    header {
+      background: #1a1a1a;
+      color: #FAFAF7;
+      padding: 16px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    header .brand {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      color: #B8860B;
+      letter-spacing: 0.5px;
+    }
+    header .contact {
+      font-size: 0.8rem;
+      color: #aaa;
+    }
+
+    /* ── Main wrapper ── */
+    main {
+      flex: 1;
+      max-width: 760px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 40px 20px 60px;
+    }
+
+    /* ── Badge ── */
+    .badge {
+      display: inline-block;
+      background: #B8860B;
+      color: #fff;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border-radius: 20px;
+      margin-bottom: 18px;
+    }
+
+    /* ── Hero ── */
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.2rem;
+      line-height: 1.25;
+      color: #1a1a1a;
+      margin-bottom: 16px;
+    }
+    .hero-bullets {
+      list-style: none;
+      margin-bottom: 32px;
+    }
+    .hero-bullets li {
+      padding: 5px 0 5px 24px;
+      position: relative;
+      color: #444;
+      font-size: 0.95rem;
+    }
+    .hero-bullets li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 12px;
+      width: 10px;
+      height: 10px;
+      background: #B8860B;
+      border-radius: 50%;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+      padding: 36px 40px;
+      margin-bottom: 28px;
+    }
+    @media (max-width: 520px) {
+      .card { padding: 24px 20px; }
+      .hero-title { font-size: 1.7rem; }
+    }
+
+    /* ── Form ── */
+    .section-label {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.15rem;
+      color: #1a1a1a;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #B8860B;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 6px;
+    }
+    label .optional {
+      font-weight: 400;
+      color: #888;
+      font-size: 0.8rem;
+    }
+    input[type="text"],
+    input[type="number"],
+    select {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid #ddd;
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      color: #1a1a1a;
+      background: #fafaf7;
+      transition: border-color 0.2s;
+      appearance: none;
+    }
+    input:focus, select:focus {
+      outline: none;
+      border-color: #B8860B;
+    }
+    .radio-group {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .radio-option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      color: #333;
+    }
+    .radio-option input[type="radio"] {
+      width: 18px;
+      height: 18px;
+      accent-color: #B8860B;
+    }
+
+    /* ── CTA Button ── */
+    .cta-btn {
+      display: block;
+      width: 100%;
+      padding: 16px;
+      background: #B8860B;
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      margin-top: 8px;
+    }
+    .cta-btn:hover { background: #9a7009; transform: translateY(-1px); }
+    .cta-btn:active { transform: translateY(0); }
+    .no-signup {
+      text-align: center;
+      font-size: 0.8rem;
+      color: #888;
+      margin-top: 10px;
+    }
+
+    /* ── Results ── */
+    #results { display: none; }
+
+    .results-banner {
+      background: #1a1a1a;
+      color: #FAFAF7;
+      border-radius: 10px;
+      padding: 24px 32px;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+    .results-banner h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      color: #B8860B;
+      margin-bottom: 4px;
+    }
+    .results-banner p {
+      font-size: 0.9rem;
+      color: #ccc;
+    }
+
+    .savings-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    @media (max-width: 600px) {
+      .savings-grid { grid-template-columns: 1fr; }
+    }
+    .savings-card {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+      padding: 22px 18px;
+      text-align: center;
+    }
+    .savings-card .sc-label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #888;
+      margin-bottom: 8px;
+    }
+    .savings-card .sc-amount {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      color: #27AE60;
+      font-weight: 700;
+      line-height: 1;
+    }
+    .savings-card .sc-sub {
+      font-size: 0.78rem;
+      color: #aaa;
+      margin-top: 4px;
+    }
+    .savings-card.combined .sc-amount {
+      color: #B8860B;
+      font-size: 2.3rem;
+    }
+
+    .breakdown-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    .breakdown-table th {
+      text-align: left;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #888;
+      padding: 8px 12px;
+      border-bottom: 2px solid #f0ede5;
+    }
+    .breakdown-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #f5f3ef;
+      color: #333;
+    }
+    .breakdown-table tr:last-child td {
+      border-bottom: none;
+      font-weight: 700;
+      color: #1a1a1a;
+    }
+    .breakdown-table .amt { text-align: right; font-weight: 600; color: #27AE60; }
+    .breakdown-table tr:last-child .amt { color: #B8860B; }
+
+    .status-pill {
+      display: inline-block;
+      padding: 3px 12px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      margin-left: 8px;
+    }
+    .pill-yes { background: #d4edda; color: #155724; }
+    .pill-no  { background: #f8d7da; color: #721c24; }
+
+    /* ── Explainer ── */
+    .explainer-box {
+      background: #f5f3ef;
+      border-left: 4px solid #B8860B;
+      border-radius: 0 8px 8px 0;
+      padding: 20px 22px;
+      margin-bottom: 20px;
+    }
+    .explainer-box h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.05rem;
+      margin-bottom: 10px;
+      color: #1a1a1a;
+    }
+    .explainer-box p {
+      font-size: 0.88rem;
+      line-height: 1.7;
+      color: #444;
+      margin-bottom: 8px;
+    }
+    .explainer-box p:last-child { margin-bottom: 0; }
+
+    .fsa-note {
+      background: #fffbe6;
+      border: 1.5px solid #B8860B;
+      border-radius: 8px;
+      padding: 16px 18px;
+      margin-bottom: 20px;
+      font-size: 0.88rem;
+      color: #555;
+      line-height: 1.6;
+    }
+    .fsa-note strong { color: #B8860B; }
+
+    .disclaimer {
+      font-size: 0.78rem;
+      color: #999;
+      line-height: 1.6;
+      padding: 14px 16px;
+      background: #f5f3ef;
+      border-radius: 8px;
+      margin-bottom: 24px;
+    }
+
+    .pdf-btn {
+      display: inline-block;
+      padding: 14px 32px;
+      background: #1a1a1a;
+      color: #B8860B;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s;
+      letter-spacing: 0.3px;
+      text-decoration: none;
+    }
+    .pdf-btn:hover { background: #333; }
+
+    .retake-btn {
+      display: inline-block;
+      padding: 14px 32px;
+      background: transparent;
+      color: #888;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      border: 1.5px solid #ddd;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+      margin-left: 12px;
+    }
+    .retake-btn:hover { border-color: #B8860B; color: #B8860B; }
+
+    /* ── Footer ── */
+    footer {
+      background: #1a1a1a;
+      color: #888;
+      text-align: center;
+      padding: 14px 20px;
+      font-size: 0.8rem;
+    }
+    footer a { color: #B8860B; text-decoration: none; }
+
+    .error-msg {
+      color: #C0392B;
+      font-size: 0.82rem;
+      margin-top: 4px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<header>
+  <div class="brand">TMS Solutions Group</div>
+  <div class="contact">tom@tms-solutions-group.com &nbsp;|&nbsp; 386-387-8620</div>
+</header>
+
+<!-- Main -->
+<main>
+
+  <!-- ── FORM SECTION ── -->
+  <section id="form-section">
+    <div class="badge">Free Calculator</div>
+    <h1 class="hero-title">FICA Section 125<br>Tax Savings Calculator</h1>
+    <ul class="hero-bullets">
+      <li>See exactly how much your business could save on payroll taxes</li>
+      <li>Understand employer and employee FICA savings side by side</li>
+      <li>Instant results — no sign-up, no commitment required</li>
+    </ul>
+
+    <div class="card">
+      <div class="section-label">Business Information</div>
+      <div class="form-group">
+        <label for="business-name">Business Name <span class="optional">(optional)</span></label>
+        <input type="text" id="business-name" placeholder="Your Business Name" />
+      </div>
+      <div class="form-group">
+        <label for="num-employees">Number of Full-Time Employees</label>
+        <input type="number" id="num-employees" placeholder="e.g. 25" min="1" />
+        <span class="error-msg" id="err-employees">Please enter a valid number of employees.</span>
+      </div>
+      <div class="form-group">
+        <label for="avg-salary">Average Annual Employee Salary ($)</label>
+        <input type="number" id="avg-salary" placeholder="e.g. 55000" min="1" />
+        <span class="error-msg" id="err-salary">Please enter a valid average salary.</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-label">Benefits Details</div>
+      <div class="form-group">
+        <label for="monthly-premium">Monthly Health Insurance Premium Per Employee ($)</label>
+        <input type="number" id="monthly-premium" placeholder="e.g. 450" min="0" />
+        <span class="error-msg" id="err-premium">Please enter a monthly premium amount.</span>
+      </div>
+      <div class="form-group">
+        <label>Do you currently have a Section 125 Cafeteria Plan?</label>
+        <div class="radio-group">
+          <label class="radio-option"><input type="radio" name="has-125" value="yes" /> Yes, we already have one</label>
+          <label class="radio-option"><input type="radio" name="has-125" value="no" checked /> No, we do not</label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Do you offer Dependent Care or FSA benefits to employees?</label>
+        <div class="radio-group">
+          <label class="radio-option"><input type="radio" name="has-fsa" value="yes" /> Yes</label>
+          <label class="radio-option"><input type="radio" name="has-fsa" value="no" checked /> No</label>
+        </div>
+      </div>
+    </div>
+
+    <button class="cta-btn" onclick="calculateSavings()">Calculate My FICA Savings</button>
+    <p class="no-signup">No sign-up required. Results shown instantly.</p>
+  </section>
+
+  <!-- ── RESULTS SECTION ── -->
+  <section id="results">
+
+    <div class="results-banner">
+      <h2 id="results-headline">Your Estimated Annual FICA Tax Savings</h2>
+      <p id="results-subhead">Based on your Section 125 health insurance premiums</p>
+    </div>
+
+    <!-- Savings Cards -->
+    <div class="savings-grid">
+      <div class="savings-card">
+        <div class="sc-label">Employer Savings</div>
+        <div class="sc-amount" id="employer-savings-display">$0</div>
+        <div class="sc-sub">per year</div>
+      </div>
+      <div class="savings-card">
+        <div class="sc-label">Employee Savings</div>
+        <div class="sc-amount" id="employee-savings-display">$0</div>
+        <div class="sc-sub">per year (total workforce)</div>
+      </div>
+      <div class="savings-card combined">
+        <div class="sc-label">Combined Total</div>
+        <div class="sc-amount" id="combined-savings-display">$0</div>
+        <div class="sc-sub">per year</div>
+      </div>
+    </div>
+
+    <!-- Breakdown Table -->
+    <div class="card">
+      <div class="section-label">Savings Breakdown</div>
+      <table class="breakdown-table">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th style="text-align:right;">Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Number of employees</td>
+            <td class="amt" id="tbl-employees">—</td>
+          </tr>
+          <tr>
+            <td>Monthly premium per employee</td>
+            <td class="amt" id="tbl-monthly-premium">—</td>
+          </tr>
+          <tr>
+            <td>Annual premium per employee</td>
+            <td class="amt" id="tbl-annual-premium">—</td>
+          </tr>
+          <tr>
+            <td>Total annual premiums (all employees)</td>
+            <td class="amt" id="tbl-total-premiums">—</td>
+          </tr>
+          <tr>
+            <td>FICA tax rate applied (employer + employee)</td>
+            <td class="amt">7.65% each</td>
+          </tr>
+          <tr>
+            <td>Employer annual FICA savings</td>
+            <td class="amt" id="tbl-employer-savings">—</td>
+          </tr>
+          <tr>
+            <td>Employee annual FICA savings (total workforce)</td>
+            <td class="amt" id="tbl-employee-savings">—</td>
+          </tr>
+          <tr>
+            <td><strong>Combined Annual Savings</strong></td>
+            <td class="amt" id="tbl-combined">—</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- FSA Note (conditional) -->
+    <div class="fsa-note" id="fsa-note" style="display:none;">
+      <strong>!! Additional Savings Available:</strong> Because you offer FSA or Dependent Care benefits, employees can also contribute to these accounts pre-tax through your Section 125 plan. FSA contributions (up to $3,300/year) and Dependent Care FSA contributions (up to $5,000/year) reduce taxable wages further, generating additional FICA savings for both you and your employees. Contact TMS Solutions Group to calculate your full FSA savings potential.
+    </div>
+
+    <!-- How It Works -->
+    <div class="explainer-box">
+      <h3>How Section 125 Reduces FICA Taxes</h3>
+      <p>A Section 125 Cafeteria Plan (named after IRS Code Section 125) allows employees to pay certain benefits -- including health insurance premiums, FSA contributions, and dependent care expenses -- with pre-tax dollars.</p>
+      <p>When premiums are paid pre-tax, they are excluded from employees' taxable wages. This means both the employee AND the employer pay FICA taxes (Social Security 6.2% + Medicare 1.45% = 7.65%) on a smaller wage base.</p>
+      <p>For example: if an employee earns $55,000/year and pays $5,400 in annual health premiums pre-tax, FICA is calculated on $49,600 instead of $55,000 -- saving both parties 7.65% on that $5,400 difference. Multiply that across your entire workforce and the savings add up fast.</p>
+      <p>Note: Social Security taxes apply only up to the annual wage base ($176,100 for 2025). For employees earning above this threshold, only the 1.45% Medicare rate applies to wages above the cap. This calculator uses the full 7.65% rate as a conservative estimate for most employee salary levels.</p>
+    </div>
+
+    <!-- Current Status Note -->
+    <div class="card" id="status-card">
+      <div class="section-label">Your Current Status</div>
+      <p style="font-size:0.92rem; color:#444; line-height:1.7;" id="status-message"></p>
+    </div>
+
+    <!-- Disclaimer -->
+    <div class="disclaimer">
+      <strong>Disclaimer:</strong> These results are estimates for informational purposes only and are based on the inputs you provided. Actual tax savings will vary based on your specific plan design, employee participation rates, payroll structure, state tax rules, and other factors. FICA tax rates and IRS contribution limits are subject to change. This calculator does not constitute tax, legal, or financial advice. Please consult a qualified tax professional or benefits advisor before making any decisions.
+    </div>
+
+    <!-- Action Buttons -->
+    <div>
+      <button class="pdf-btn" onclick="generatePDF()">Download PDF Report</button>
+      <button class="retake-btn" onclick="resetCalculator()">Recalculate</button>
+    </div>
+
+  </section>
+</main>
+
+<!-- Footer -->
+<footer>
+  tom@tms-solutions-group.com &nbsp;|&nbsp; <a href="https://tms-solutions-group.com">tms-solutions-group.com</a> &nbsp;|&nbsp; 386-387-8620
+</footer>
+
+<script>
+  // ── Utility ──────────────────────────────────────────────────────────────
+
+  function fmt(n) {
+    return '$' + Math.round(n).toLocaleString('en-US');
+  }
+
+  function fmtPlain(n) {
+    return '$' + Math.round(n).toLocaleString('en-US');
+  }
+
+  // State
+  let calcData = {};
+
+  // ── Calculate ─────────────────────────────────────────────────────────────
+
+  function calculateSavings() {
+    // Clear previous errors
+    document.querySelectorAll('.error-msg').forEach(el => el.style.display = 'none');
+
+    const numEmployees = parseFloat(document.getElementById('num-employees').value);
+    const avgSalary    = parseFloat(document.getElementById('avg-salary').value);
+    const monthlyPrem  = parseFloat(document.getElementById('monthly-premium').value);
+    const has125       = document.querySelector('input[name="has-125"]:checked').value;
+    const hasFSA       = document.querySelector('input[name="has-fsa"]:checked').value;
+    const bizName      = document.getElementById('business-name').value.trim();
+
+    let valid = true;
+    if (!numEmployees || numEmployees < 1) {
+      document.getElementById('err-employees').style.display = 'block'; valid = false;
+    }
+    if (!avgSalary || avgSalary < 1) {
+      document.getElementById('err-salary').style.display = 'block'; valid = false;
+    }
+    if (isNaN(monthlyPrem) || monthlyPrem < 0) {
+      document.getElementById('err-premium').style.display = 'block'; valid = false;
+    }
+    if (!valid) return;
+
+    // ── Core Calculations ──
+    const FICA_RATE      = 0.0765;
+    const annualPremPer  = monthlyPrem * 12;
+    const totalPremiums  = annualPremPer * numEmployees;
+    const employerSavings = totalPremiums * FICA_RATE;
+    const employeeSavings = totalPremiums * FICA_RATE;
+    const combinedSavings = employerSavings + employeeSavings;
+
+    // Store for PDF
+    calcData = {
+      bizName, numEmployees, avgSalary, monthlyPrem, has125, hasFSA,
+      annualPremPer, totalPremiums, employerSavings, employeeSavings, combinedSavings
+    };
+
+    // ── Populate results ──
+    document.getElementById('employer-savings-display').textContent  = fmt(employerSavings);
+    document.getElementById('employee-savings-display').textContent  = fmt(employeeSavings);
+    document.getElementById('combined-savings-display').textContent  = fmt(combinedSavings);
+
+    document.getElementById('tbl-employees').textContent       = numEmployees.toLocaleString();
+    document.getElementById('tbl-monthly-premium').textContent = fmt(monthlyPrem);
+    document.getElementById('tbl-annual-premium').textContent  = fmt(annualPremPer);
+    document.getElementById('tbl-total-premiums').textContent  = fmt(totalPremiums);
+    document.getElementById('tbl-employer-savings').textContent = fmt(employerSavings);
+    document.getElementById('tbl-employee-savings').textContent = fmt(employeeSavings);
+    document.getElementById('tbl-combined').textContent         = fmt(combinedSavings);
+
+    // Banner headline
+    const headline = bizName
+      ? (bizName + ' - Estimated Annual FICA Tax Savings')
+      : 'Your Estimated Annual FICA Tax Savings';
+    document.getElementById('results-headline').textContent = headline;
+
+    // FSA note
+    document.getElementById('fsa-note').style.display = hasFSA === 'yes' ? 'block' : 'none';
+
+    // Status message
+    let statusMsg = '';
+    if (has125 === 'yes') {
+      statusMsg = 'You currently have a Section 125 Cafeteria Plan in place. Based on your inputs, you are already realizing approximately ' + fmt(combinedSavings) + ' in combined annual FICA tax savings. TMS Solutions Group can review your plan design to ensure you are maximizing every available savings opportunity and staying compliant with IRS requirements.';
+    } else {
+      statusMsg = 'You do not currently have a Section 125 Cafeteria Plan. Based on your inputs, you are missing an estimated ' + fmt(combinedSavings) + ' in combined annual FICA tax savings. Implementing a Section 125 plan is one of the simplest and most cost-effective benefits strategies available to employers of any size. TMS Solutions Group can help you set one up quickly and start capturing these savings.';
+    }
+    document.getElementById('status-message').textContent = statusMsg;
+
+    // Show results
+    document.getElementById('form-section').style.display = 'none';
+    document.getElementById('results').style.display      = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ── Reset ─────────────────────────────────────────────────────────────────
+
+  function resetCalculator() {
+    document.getElementById('form-section').style.display = 'block';
+    document.getElementById('results').style.display      = 'none';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ── PDF Generation ────────────────────────────────────────────────────────
+
+  function generatePDF() {
+    try {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'letter' });
+
+      // pdfSafe sanitizer
+      function pdfSafe(str) {
+        if (str == null) return '';
+        return String(str)
+          .replace(/\u2013/g, '-')
+          .replace(/\u2014/g, '-')
+          .replace(/\u00B7/g, '|')
+          .replace(/\u2019/g, "'")
+          .replace(/\u2018/g, "'")
+          .replace(/\u201C/g, '"')
+          .replace(/\u201D/g, '"')
+          .replace(/[^\x00-\x7F]/g, '');
+      }
+
+      const PAGE_W = 612;
+      const PAGE_H = 792;
+      const CREAM  = [250, 250, 247];
+      const GOLD   = [184, 134, 11];
+      const DARK   = [26, 26, 26];
+      const GREEN  = [39, 174, 96];
+      const GRAY   = [120, 120, 120];
+      const WHITE  = [255, 255, 255];
+
+      const {
+        bizName, numEmployees, avgSalary, monthlyPrem, has125, hasFSA,
+        annualPremPer, totalPremiums, employerSavings, employeeSavings, combinedSavings
+      } = calcData;
+
+      // ── PAGE 1: COVER / SUMMARY ──────────────────────────────────────────
+
+      // Background
+      doc.setFillColor(...CREAM);
+      doc.rect(0, 0, PAGE_W, PAGE_H, 'F');
+
+      // Dark header bar
+      doc.setFillColor(...DARK);
+      doc.rect(0, 0, PAGE_W, 90, 'F');
+
+      // Header text
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(18);
+      doc.setTextColor(...GOLD);
+      doc.text(pdfSafe('TMS Solutions Group'), 40, 38);
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9);
+      doc.setTextColor(200, 200, 200);
+      doc.text(pdfSafe('tom@tms-solutions-group.com  |  tms-solutions-group.com  |  386-387-8620'), 40, 56);
+
+      doc.setFontSize(9);
+      doc.setTextColor(...GOLD);
+      doc.text(pdfSafe('FREE CALCULATOR'), PAGE_W - 40, 38, { align: 'right' });
+
+      // Gold accent bar
+      doc.setFillColor(...GOLD);
+      doc.rect(0, 90, PAGE_W, 4, 'F');
+
+      // Title section
+      doc.setFont('times', 'bold');
+      doc.setFontSize(26);
+      doc.setTextColor(...DARK);
+      doc.text(pdfSafe('FICA Section 125 Tax Savings Calculator'), PAGE_W / 2, 148, { align: 'center' });
+
+      if (bizName) {
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(13);
+        doc.setTextColor(...GRAY);
+        doc.text(pdfSafe(bizName), PAGE_W / 2, 172, { align: 'center' });
+      }
+
+      const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      doc.setTextColor(...GRAY);
+      doc.text(pdfSafe('Report Date: ' + today), PAGE_W / 2, 192, { align: 'center' });
+
+      // ── Combined Savings Hero ──
+      const heroY = 220;
+      doc.setFillColor(...DARK);
+      doc.roundedRect(60, heroY, PAGE_W - 120, 80, 8, 8, 'F');
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9);
+      doc.setTextColor(...GOLD);
+      const heroLbl = has125 === 'yes' ? 'CURRENT ANNUAL FICA TAX SAVINGS' : 'ESTIMATED ANNUAL FICA TAX SAVINGS';
+      doc.text(pdfSafe(heroLbl), PAGE_W / 2, heroY + 24, { align: 'center' });
+
+      doc.setFont('times', 'bold');
+      doc.setFontSize(36);
+      doc.setTextColor(255, 255, 255);
+      doc.text(pdfSafe(fmtPlain(combinedSavings)), PAGE_W / 2, heroY + 60, { align: 'center' });
+
+      // ── Three savings cards ──
+      const cardY = 324;
+      const cardW = 150;
+      const gap   = 20;
+      const startX = (PAGE_W - (cardW * 3 + gap * 2)) / 2;
+
+      const cards = [
+        { label: 'Employer Savings', value: fmtPlain(employerSavings), color: GREEN },
+        { label: 'Employee Savings', value: fmtPlain(employeeSavings), color: GREEN },
+        { label: 'Combined Total',   value: fmtPlain(combinedSavings),  color: GOLD  }
+      ];
+
+      cards.forEach((c, i) => {
+        const cx = startX + i * (cardW + gap);
+        doc.setFillColor(...WHITE);
+        doc.setDrawColor(230, 230, 225);
+        doc.roundedRect(cx, cardY, cardW, 72, 6, 6, 'FD');
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(7.5);
+        doc.setTextColor(...GRAY);
+        doc.text(pdfSafe(c.label.toUpperCase()), cx + cardW / 2, cardY + 18, { align: 'center' });
+
+        doc.setFont('times', 'bold');
+        doc.setFontSize(18);
+        doc.setTextColor(...c.color);
+        doc.text(pdfSafe(c.value), cx + cardW / 2, cardY + 46, { align: 'center' });
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(7.5);
+        doc.setTextColor(...GRAY);
+        doc.text(pdfSafe('per year'), cx + cardW / 2, cardY + 62, { align: 'center' });
+      });
+
+      // ── Inputs Summary ──
+      const inpY = 420;
+      doc.setFillColor(245, 243, 239);
+      doc.roundedRect(60, inpY, PAGE_W - 120, 100, 6, 6, 'F');
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(10);
+      doc.setTextColor(...DARK);
+      doc.text(pdfSafe('Input Summary'), 80, inpY + 20);
+
+      const inputs = [
+        ['Number of Employees', numEmployees.toString()],
+        ['Average Annual Salary', fmtPlain(avgSalary)],
+        ['Monthly Premium / Employee', fmtPlain(monthlyPrem)],
+        ['Section 125 Plan in Place', has125 === 'yes' ? 'Yes' : 'No'],
+        ['FSA / Dependent Care Offered', hasFSA === 'yes' ? 'Yes' : 'No'],
+      ];
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9);
+      const col1X = 80, col2X = 300;
+      const col3X = 390, col4X = PAGE_W - 60;
+      let rowY = inpY + 36;
+      inputs.forEach((row, idx) => {
+        const x1 = idx < 3 ? col1X : col3X;
+        const x2 = idx < 3 ? col2X : col4X;
+        if (idx === 3) rowY = inpY + 36;
+        doc.setTextColor(...GRAY);
+        doc.text(pdfSafe(row[0] + ':'), x1, rowY);
+        doc.setTextColor(...DARK);
+        doc.setFont('helvetica', 'bold');
+        if (idx < 3) {
+          doc.text(pdfSafe(row[1]), col2X + 5, rowY);
+          rowY += 18;
+        } else {
+          doc.text(pdfSafe(row[1]), col4X - doc.getTextWidth(pdfSafe(row[1])), rowY);
+          if (idx === 3) rowY += 18;
+        }
+        doc.setFont('helvetica', 'normal');
+      });
+
+      // ── Status pill ──
+      const pillY = 540;
+      const pillColor = has125 === 'yes' ? [212, 237, 218] : [248, 215, 218];
+      const pillText  = has125 === 'yes'
+        ? 'Section 125 Plan: ACTIVE - You are capturing these savings'
+        : 'Section 125 Plan: NOT IN PLACE - You are missing these savings';
+      const pillTxtColor = has125 === 'yes' ? [21, 87, 36] : [114, 28, 36];
+      doc.setFillColor(...pillColor);
+      doc.roundedRect(60, pillY, PAGE_W - 120, 32, 6, 6, 'F');
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(9.5);
+      doc.setTextColor(...pillTxtColor);
+      doc.text(pdfSafe(pillText), PAGE_W / 2, pillY + 20, { align: 'center' });
+
+      // ── Footer P1 ──
+      doc.setFillColor(...DARK);
+      doc.rect(0, PAGE_H - 36, PAGE_W, 36, 'F');
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(8);
+      doc.setTextColor(...GRAY);
+      doc.text(pdfSafe('tom@tms-solutions-group.com  |  tms-solutions-group.com  |  386-387-8620'), PAGE_W / 2, PAGE_H - 14, { align: 'center' });
+
+      // ── PAGE 2: DETAILED BREAKDOWN ───────────────────────────────────────
+      doc.addPage();
+
+      doc.setFillColor(...CREAM);
+      doc.rect(0, 0, PAGE_W, PAGE_H, 'F');
+
+      // Header bar
+      doc.setFillColor(...DARK);
+      doc.rect(0, 0, PAGE_W, 70, 'F');
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(15);
+      doc.setTextColor(...GOLD);
+      doc.text(pdfSafe('TMS Solutions Group'), 40, 30);
+      doc.setFont('times', 'bold');
+      doc.setFontSize(12);
+      doc.setTextColor(255, 255, 255);
+      doc.text(pdfSafe('FICA Section 125 - Detailed Savings Breakdown'), 40, 52);
+
+      doc.setFillColor(...GOLD);
+      doc.rect(0, 70, PAGE_W, 3, 'F');
+
+      // Section: Calculation Detail
+      let y = 104;
+      doc.setFont('times', 'bold');
+      doc.setFontSize(14);
+      doc.setTextColor(...DARK);
+      doc.text(pdfSafe('Calculation Detail'), 40, y);
+      doc.setFillColor(...GOLD);
+      doc.rect(40, y + 4, 120, 2, 'F');
+      y += 24;
+
+      const rows = [
+        ['Number of employees', numEmployees.toString()],
+        ['Monthly premium per employee', fmtPlain(monthlyPrem)],
+        ['Annual premium per employee (x12)', fmtPlain(annualPremPer)],
+        ['Total annual premiums (all employees)', fmtPlain(totalPremiums)],
+        ['FICA rate - Employer', '7.65%'],
+        ['FICA rate - Employee', '7.65%'],
+        ['Employer annual FICA savings', fmtPlain(employerSavings)],
+        ['Employee annual FICA savings (total)', fmtPlain(employeeSavings)],
+        ['COMBINED ANNUAL SAVINGS', fmtPlain(combinedSavings)],
+      ];
+
+      rows.forEach((row, i) => {
+        const rowBg = i % 2 === 0 ? [248, 246, 242] : WHITE;
+        doc.setFillColor(...rowBg);
+        doc.rect(40, y, PAGE_W - 80, 22, 'F');
+
+        const isLast = i === rows.length - 1;
+        if (isLast) {
+          doc.setFillColor(26, 26, 26);
+          doc.rect(40, y, PAGE_W - 80, 22, 'F');
+        }
+
+        doc.setFont('helvetica', isLast ? 'bold' : 'normal');
+        doc.setFontSize(9.5);
+        doc.setTextColor(isLast ? 255 : 60, isLast ? 255 : 60, isLast ? 255 : 60);
+        doc.text(pdfSafe(row[0]), 52, y + 15);
+
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(...(isLast ? GOLD : GREEN));
+        doc.text(pdfSafe(row[1]), PAGE_W - 52, y + 15, { align: 'right' });
+
+        y += 22;
+      });
+
+      // Section: How Section 125 Works
+      y += 18;
+      doc.setFont('times', 'bold');
+      doc.setFontSize(13);
+      doc.setTextColor(...DARK);
+      doc.text(pdfSafe('How Section 125 Reduces FICA Taxes'), 40, y);
+      doc.setFillColor(...GOLD);
+      doc.rect(40, y + 4, 160, 2, 'F');
+      y += 22;
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9);
+      doc.setTextColor(70, 70, 70);
+
+      const explainerText = [
+        'A Section 125 Cafeteria Plan allows employees to pay health insurance premiums and other',
+        'qualified benefits with pre-tax dollars. This reduces the taxable wage base for both the',
+        'employer and employee, lowering the FICA taxes (Social Security 6.2% + Medicare 1.45%)',
+        'owed by each party. Both employer and employee save 7.65% on every pre-tax dollar.',
+        '',
+        'Example: An employee earning $55,000 paying $5,400 in pre-tax premiums pays FICA on',
+        '$49,600 instead of $55,000 - saving $413 per year. The employer saves the same amount.',
+        'Multiply this across your entire workforce for your total combined savings.',
+        '',
+        'Note: The Social Security portion (6.2%) only applies up to the annual wage base',
+        '($176,100 for 2025). For higher earners, only the 1.45% Medicare rate applies above',
+        'this threshold. This calculator applies the full 7.65% as an estimate for most employees.',
+      ];
+
+      explainerText.forEach(line => {
+        if (line === '') { y += 6; return; }
+        doc.text(pdfSafe(line), 40, y);
+        y += 13;
+      });
+
+      // FSA note on PDF
+      if (hasFSA === 'yes') {
+        y += 8;
+        doc.setFillColor(255, 251, 230);
+        doc.setDrawColor(...GOLD);
+        doc.roundedRect(40, y, PAGE_W - 80, 52, 4, 4, 'FD');
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(9);
+        doc.setTextColor(...GOLD);
+        doc.text(pdfSafe('!! Additional Savings: FSA / Dependent Care Benefits'), 52, y + 16);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(80, 80, 80);
+        const fsaLines = doc.splitTextToSize(
+          pdfSafe('You offer FSA or Dependent Care benefits. Employee pre-tax contributions to these accounts generate additional FICA savings beyond health premiums. FSA contributions (up to $3,300/yr) and Dependent Care FSA (up to $5,000/yr) further reduce the taxable wage base for both parties. Contact TMS Solutions Group for a full FSA savings analysis.'),
+          PAGE_W - 120
+        );
+        fsaLines.forEach((line, li) => {
+          doc.text(pdfSafe(line), 52, y + 30 + li * 12);
+        });
+        y += 60;
+      }
+
+      // Disclaimer
+      y += 10;
+      doc.setFillColor(245, 243, 239);
+      doc.roundedRect(40, y, PAGE_W - 80, 62, 4, 4, 'F');
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(8.5);
+      doc.setTextColor(...GRAY);
+      doc.text(pdfSafe('Disclaimer'), 52, y + 14);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(7.5);
+      const disclaimerLines = doc.splitTextToSize(
+        pdfSafe('These results are estimates for informational purposes only. Actual tax savings will vary based on plan design, employee participation rates, payroll structure, state tax rules, and other factors. FICA tax rates and IRS limits are subject to change. This report does not constitute tax, legal, or financial advice. Consult a qualified tax professional or benefits advisor before making decisions.'),
+        PAGE_W - 110
+      );
+      disclaimerLines.forEach((line, li) => {
+        doc.text(pdfSafe(line), 52, y + 26 + li * 11);
+      });
+
+      // CTA
+      const ctaY = PAGE_H - 90;
+      doc.setFillColor(...GOLD);
+      doc.roundedRect(60, ctaY, PAGE_W - 120, 44, 6, 6, 'F');
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(10.5);
+      doc.setTextColor(...DARK);
+      doc.text(pdfSafe('Ready to start saving? Contact TMS Solutions Group today.'), PAGE_W / 2, ctaY + 16, { align: 'center' });
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9);
+      doc.text(pdfSafe('tom@tms-solutions-group.com  |  tms-solutions-group.com  |  386-387-8620'), PAGE_W / 2, ctaY + 32, { align: 'center' });
+
+      // Footer P2
+      doc.setFillColor(...DARK);
+      doc.rect(0, PAGE_H - 36, PAGE_W, 36, 'F');
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(8);
+      doc.setTextColor(...GRAY);
+      doc.text(pdfSafe('tom@tms-solutions-group.com  |  tms-solutions-group.com  |  386-387-8620'), PAGE_W / 2, PAGE_H - 14, { align: 'center' });
+
+      // ── Save ──
+      const safeName = bizName
+        ? bizName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '-').substring(0, 40)
+        : 'Report';
+      doc.save(pdfSafe('TMS-FICA-Section125-' + safeName + '.pdf'));
+
+    } catch (err) {
+      console.error('PDF generation error:', err);
+      alert('PDF generation failed: ' + err.message);
+    }
+  }
+</script>
+</body>
+</html>
